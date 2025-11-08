@@ -1,0 +1,61 @@
+/* static/css/style.css */
+
+/* Custom Monochrome scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #fff; border-radius: 4px; }
+
+/* Base styles to enforce strict black/white */
+body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+input, textarea, select {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    outline: none;
+}
+input::placeholder, textarea::placeholder {
+    color: #888888;
+}
+input:focus, textarea:focus, select:focus {
+     box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* Canvas behind everything */
+#cometCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.active-tab {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Flash Messages */
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.flashes li {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #fff;
+    background: rgba(0,0,0,0.8);
+    text-align: center;
+}
+.flashes li.error { border-color: #ff3333; color: #ff3333; } /* Optional: stark red for critical errors if desired, otherwise keep white */
+.flashes li.success { border-color: #ffffff; }

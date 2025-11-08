@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - {{ candidate.name }}{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">WELCOME, {{ candidate.name }}</h2>
+        <a href="{{ url_for('logout') }}" class="px-4 py-2 border border-white text-sm uppercase hover:bg-white hover:text-black transition-colors">Logout</a>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Profile Section -->
+        <div>
+            <h3 class="text-xl font-bold uppercase border-b border-white mb-4 pb-2">Profile Data</h3>
+            <div class="space-y-2 text-sm">
+                <p><span class="opacity-70">EMAIL:</span> {{ candidate.email }}</p>
+                <p><span class="opacity-70">PHONE:</span> {{ candidate.phone }}</p>
+                <p><span class="opacity-70">EXPERIENCE:</span> {{ candidate.experience_years }} Years</p>
+                {% if candidate.resume_link %}
+                    <p class="mt-4"><a href="{{ url_for('uploaded_file', filename=candidate.resume_link) }}" class="underline hover:no-underline" target="_blank">[VIEW RESUME FILE]</a></p>
+                {% else %}
+                    <p class="mt-4 opacity-50">[NO RESUME ON FILE]</p>
+                {% endif %}
+            </div>
+
+            <h3 class="text-xl font-bold uppercase border-b border-white mt-8 mb-4 pb-2">Recognized Skills</h3>
+            <ul class="flex flex-wrap gap-2">
+                {% for s in skills %}
+                    <li class="px-3 py-1 border border-white text-xs uppercase">{{ s.skill_name }}</li>
+                {% else %}
+                    <li class="opacity-50 text-sm">No skills listed yet.</li>
+                {% endfor %}
+            </ul>
+
+             <!-- Navigation Actions -->
+            <div class="mt-8 flex flex-col space-y-3">
+                <a href="{{ url_for('jobs_list') }}" class="text-center py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200">
+                    SEARCH ALL JOBS
+                </a>
+                <a href="{{ url_for('candidate_applications') }}" class="text-center py-3 border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                    VIEW MY APPLICATIONS
+                </a>
+            </div>
+        </div>
+
+        <!-- Recommended Jobs Section -->
+        <div>
+             <h3 class="text-xl font-bold uppercase border-b border-white mb-4 pb-2">Recommended For You</h3>
+             <ul class="space-y-4">
+                {% for job in rec_jobs %}
+                    <li class="border border-white p-4 hover:bg-white hover:text-black transition-colors group">
+                        <a href="{{ url_for('job_detail', job_id=job.job_id) }}" class="block">
+                            <div class="font-bold text-lg group-hover:underline">{{ job.title }}</div>
+                            <div class="text-sm opacity-70">{{ job.location }}</div>
+                             <!-- If you have company name in job object, add it here: -->
+                             <!-- <div class="text-xs uppercase mt-2">{{ job.company_name }}</div> -->
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="opacity-70 italic">No specific recommendations at this time.</li>
+                {% endfor %}
+             </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

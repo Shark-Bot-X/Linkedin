@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}MY_APPLICATIONS{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">ACTIVE APPLICATIONS</h2>
+        <a href="{{ url_for('candidate_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; DASHBOARD</a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-white opacity-70 text-sm uppercase">
+                    <th class="p-3">JOB TITLE</th>
+                    <th class="p-3">DATE APPLIED</th>
+                    <th class="p-3">CURRENT STATUS</th>
+                    <th class="p-3">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Assuming 'applications' is passed to this template from a route you will create -->
+                {% for app in applications %}
+                <tr class="border-b border-white hover:bg-white hover:text-black transition-colors">
+                    <td class="p-3 font-bold">{{ app.job_title }}</td>
+                    <td class="p-3 text-sm">{{ app.applied_date }}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 border text-xs uppercase font-bold
+                            {% if app.status == 'Selected' %} bg-white text-black border-white
+                            {% elif app.status == 'Rejected' %} opacity-50
+                            {% else %} border-white {% endif %}">
+                            {{ app.status }}
+                        </span>
+                    </td>
+                    <td class="p-3">
+                         <a href="{{ url_for('job_detail', job_id=app.job_id) }}" class="text-xs uppercase underline hover:no-underline">VIEW JOB</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-8 text-center border border-white border-dashed opacity-50 uppercase">
+                        NO ACTIVE APPLICATION RECORDS FOUND.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}JOB_DATABASE_SEARCH{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 border-b-2 border-white pb-4">GLOBAL JOB DATABASE</h2>
+
+    <!-- Search Filters -->
+    <form action="{{ url_for('jobs_list') }}" method="GET" class="mb-8 p-4 border border-white">
+        <h3 class="text-lg font-bold uppercase mb-4">SEARCH PARAMETERS</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-1">
+                <label class="text-xs uppercase font-bold opacity-70">REQUIRED SKILL</label>
+                <input type="text" name="skill" placeholder="ex: PYTHON" class="w-full p-2 bg-black border border-white text-white" value="{{ request.args.get('skill', '') }}">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs uppercase font-bold opacity-70">LOCATION SECTOR</label>
+                <input type="text" name="location" placeholder="ex: REMOTE" class="w-full p-2 bg-black border border-white text-white" value="{{ request.args.get('location', '') }}">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs uppercase font-bold opacity-70">MAX SALARY CREDITS</label>
+                <input type="number" name="max_salary" placeholder="100000" class="w-full p-2 bg-black border border-white text-white" value="{{ request.args.get('max_salary', '') }}">
+            </div>
+        </div>
+        <button type="submit" class="mt-4 w-full py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+            EXECUTE SEARCH
+        </button>
+    </form>
+
+    <!-- Job Results List -->
+    <div class="space-y-4">
+        {% for job in jobs %}
+            <div class="border border-white p-4 hover:bg-white hover:text-black transition-colors group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-xl font-bold uppercase group-hover:underline">
+                            <a href="{{ url_for('job_detail', job_id=job.job_id) }}">{{ job.title }}</a>
+                        </h3>
+                        <p class="text-sm opacity-70 uppercase mt-1">LOC: {{ job.location }} | SAL: ${{ job.salary }}</p>
+                    </div>
+                    <a href="{{ url_for('job_detail', job_id=job.job_id) }}" class="px-4 py-2 border border-white text-xs font-bold uppercase group-hover:border-black">
+                        ACCESS DETAILS
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="p-8 text-center border border-white border-dashed opacity-50 uppercase">
+                NO JOB RECORDS FOUND MATCHING PARAMETERS.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

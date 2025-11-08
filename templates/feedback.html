@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}SUBMIT_FEEDBACK{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto border-2 border-white bg-black bg-opacity-90 p-6">
+    <h2 class="text-2xl font-bold uppercase tracking-widest mb-6 border-b-2 border-white pb-4">CANDIDATE EVALUATION</h2>
+    
+    <div class="mb-6 text-sm uppercase opacity-80">
+        <!-- Assuming 'interview' object is passed to show who we are evaluating -->
+        <p>CANDIDATE: <span class="font-bold text-white">{{ interview.candidate }}</span></p>
+        <p>POSITION: <span class="font-bold text-white">{{ interview.job }}</span></p>
+        <p>INTERVIEW DATE: {{ interview.interview_date }}</p>
+    </div>
+
+    <!-- Route corresponding to recruiter_give_feedback(interview_id) -->
+    <form action="{{ url_for('recruiter_give_feedback', interview_id=interview.interview_id) }}" method="POST" class="space-y-6">
+        
+        <div class="space-y-2">
+            <label class="text-sm font-bold uppercase tracking-wider">PERFORMANCE RATING (1-5)</label>
+            <div class="flex gap-4 pt-2">
+                {% for i in range(1, 6) %}
+                <label class="flex items-center cursor-pointer">
+                    <input type="radio" name="rating" value="{{ i }}" required class="hidden peer">
+                    <span class="w-12 h-12 flex items-center justify-center border-2 border-white text-lg font-bold transition-all peer-checked:bg-white peer-checked:text-black hover:bg-white hover:text-black hover:bg-opacity-20">
+                        {{ i }}
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-bold uppercase tracking-wider">EVALUATION NOTES</label>
+            <textarea name="comments" rows="6" required class="w-full p-4 bg-black border-2 border-white text-white placeholder-gray-500 focus:border-white focus:ring-0" placeholder="ENTER DETAILED OBSERVATIONS..."></textarea>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+            <button type="submit" class="flex-1 py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                SUBMIT EVALUATION
+            </button>
+            <a href="javascript:history.back()" class="px-6 py-3 border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                CANCEL
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Recruiter Dashboard{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+     <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-xl md:text-2xl font-bold uppercase tracking-widest">TERMINAL: {{ session.user_name }}</h2>
+        <div class="flex gap-2 md:gap-4">
+             <a href="{{ url_for('recruiter_post_job') }}" class="px-3 py-2 bg-white text-black text-xs md:text-sm uppercase font-bold hover:bg-gray-200">
+                + POST JOB
+            </a>
+            <a href="{{ url_for('logout') }}" class="px-3 py-2 border border-white text-xs md:text-sm uppercase hover:bg-white hover:text-black transition-colors">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <h3 class="text-lg font-bold uppercase mb-4">ACTIVE LISTINGS</h3>
+    <div class="grid gap-4">
+        {% for j in jobs %}
+            <div class="flex justify-between items-center border border-white p-4">
+                <div>
+                    <div class="font-bold text-lg">{{ j.title }}</div>
+                    <div class="text-sm opacity-70">ID: #{{ j.job_id }} | {{ j.location }}</div>
+                </div>
+                <a href="{{ url_for('recruiter_view_applicants', job_id=j.job_id) }}" class="px-4 py-2 border border-white text-xs uppercase hover:bg-white hover:text-black transition-colors">
+                    VIEW APPLICANTS
+                </a>
+            </div>
+        {% else %}
+            <p class="opacity-70">No active job listings found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

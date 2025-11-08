@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ job.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto border-2 border-white bg-black bg-opacity-90 p-6">
+    <a href="javascript:history.back()" class="text-xs uppercase underline mb-4 inline-block hover:no-underline">&larr; Back</a>
+    
+    <h2 class="text-3xl font-bold uppercase tracking-widest mb-2">{{ job.title }}</h2>
+    <div class="flex gap-4 text-sm opacity-80 mb-6 border-b border-white pb-4">
+        <span>LOC: {{ job.location }}</span>
+        <span>|</span>
+        <span>SALARY: ${{ job.salary }}</span>
+    </div>
+
+    <div class="mb-8">
+        <h3 class="text-xl font-bold uppercase mb-3">Mission Brief</h3>
+        <p class="whitespace-pre-line leading-relaxed opacity-90">{{ job.description }}</p>
+    </div>
+
+    <div class="mb-8">
+        <h4 class="text-lg font-bold uppercase mb-3">Required Capabilities</h4>
+        <ul class="flex flex-wrap gap-2">
+            {% for s in skills %}
+                <li class="px-3 py-1 bg-white text-black text-xs font-bold uppercase">{{ s.skill_name }}</li>
+            {% else %}
+                <li class="opacity-70 text-sm">No specific skills listed.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Apply Action -->
+    <!-- Only show if candidate is logged in, or handle in route. Assuming candidate view. -->
+    {% if session.get('user_type') == 'candidate' %}
+        <form method="post" action="{{ url_for('apply_for_job', job_id=job.job_id) }}">
+             <button type="submit" class="w-full py-4 bg-white text-black font-bold uppercase tracking-[0.2em] text-lg hover:bg-gray-200 transition-colors">
+                INITIATE APPLICATION
+            </button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

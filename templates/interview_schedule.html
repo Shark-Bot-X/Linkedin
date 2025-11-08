@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}MASTER_INTERVIEW_SCHEDULE{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">INTERVIEW MANIFEST</h2>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; TERMINAL</a>
+    </div>
+
+    <div class="space-y-4">
+        <!-- Assuming 'interviews' is passed from a route using view_interviews() -->
+        {% for interview in interviews %}
+        <div class="border border-white p-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <div>
+                <div class="text-xl font-bold uppercase">{{ interview.candidate }}</div>
+                <div class="text-sm opacity-70 uppercase mt-1">
+                    ROLE: {{ interview.job }}
+                </div>
+                <div class="mt-2 flex gap-4 text-xs font-bold uppercase">
+                    <span class="px-2 py-1 bg-white text-black">DATE: {{ interview.interview_date }}</span>
+                    <span class="px-2 py-1 border border-white">MODE: {{ interview.interview_mode }}</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-end space-y-2">
+                <span class="text-xs uppercase opacity-70">INTERVIEWER: {{ interview.interviewer_name }}</span>
+                <!-- Link to give feedback for this specific interview -->
+                <a href="{{ url_for('give_feedback_form', interview_id=interview.interview_id) }}" class="px-4 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200">
+                    INITIATE FEEDBACK
+                </a>
+            </div>
+        </div>
+        {% else %}
+         <div class="p-8 text-center border border-white border-dashed opacity-50 uppercase">
+            NO INTERVIEWS CURRENTLY SCHEDULED.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
