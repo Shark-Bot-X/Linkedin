@@ -386,7 +386,7 @@ def recruiter_interviews():
     
     interviews = fetch_all("""
         SELECT i.interview_id, i.interview_date, i.interview_mode, i.interviewer_name,
-               c.name as candidate_name, j.title as job_title, a.app_id,
+               c.name as candidate_name, j.title as job_title, a.app_id, a.status as app_status,
                f.feedback_id, f.rating, f.comments
         FROM Interview i
         JOIN Application a ON i.app_id = a.app_id
@@ -574,45 +574,74 @@ def give_feedback_form(interview_id):
         return redirect(url_for('index'))
     
     interview = fetch_all("""
-        SELECT i.*, c.name as candidate, j.title as job, a.app_id
+        SELECT i.*, c.name as candidate, j.title as job, a.app_id, a.status as app_status
         FROM Interview i
         JOIN Application a ON i.app_id = a.app_id
         JOIN Candidate c ON a.candidate_id = c.candidate_id
         JOIN Job_Post j ON a.job_id = j.job_id
         WHERE i.interview_id = %s
-    """, (interview_id,))[0]
+    """, (interview_id,))
     
-    return render_template('feedback.html', interview=interview)
+    if not interview:
+        flash("Interview not found.", "danger")
+        return redirect(url_for('recruiter_interviews'))
+    
+    interview = interview[0]
+    
+    # Check if feedback already exists
+    existing_feedback = fetch_all(
+        "SELECT * FROM Feedback WHERE interview_id=%s", 
+        (interview_id,)
+    )
+    
+    return render_template('feedback.html', 
+                         interview=interview, 
+                         existing_feedback=existing_feedback[0] if existing_feedback else None)
 
 # Give feedback
 @app.route('/recruiter/interview/<int:interview_id>/feedback', methods=['POST'])
 def recruiter_give_feedback(interview_id):
+    if session.get('user_type') != 'recruiter':
+        return redirect(url_for('index'))
+    
     rating = int(request.form.get('rating'))
     comments = request.form.get('comments')
-    final_decision = request.form.get('final_decision')  # 'Selected' or 'Rejected'
+    final_decision = request.form.get('final_decision')  # 'Selected' or 'Rejected' or 'Shortlisted'
+    
+    # Validate rating
+    if rating < 1 or rating > 10:
+        flash("Rating must be between 1 and 10.", "danger")
+        return redirect(url_for('give_feedback_form', interview_id=interview_id))
     
     # Check if feedback already exists
     existing = fetch_all("SELECT * FROM Feedback WHERE interview_id=%s", (interview_id,))
+    
     if existing:
         # Update existing feedback
         execute_query(
             "UPDATE Feedback SET rating=%s, comments=%s, feedback_date=%s WHERE interview_id=%s",
             (rating, comments, date.today(), interview_id)
         )
+        flash("Feedback updated successfully.", "success")
     else:
         # Insert new feedback
         execute_query(
             "INSERT INTO Feedback (interview_id, rating, comments, feedback_date) VALUES (%s,%s,%s,%s)",
             (interview_id, rating, comments, date.today())
         )
+        flash("Feedback submitted successfully.", "success")
     
     # Update application status based on final decision
     if final_decision:
         # Get app_id from interview
         interview = fetch_all("SELECT app_id FROM Interview WHERE interview_id=%s", (interview_id,))[0]
         execute_query("UPDATE Application SET status=%s WHERE app_id=%s", (final_decision, interview['app_id']))
+        
+        if final_decision == 'Selected':
+            flash(f"Candidate has been marked as SELECTED! 🎉", "success")
+        elif final_decision == 'Rejected':
+            flash(f"Candidate has been marked as REJECTED.", "info")
     
-    flash("Feedback submitted and candidate status updated successfully.", "success")
     return redirect(url_for('recruiter_interviews'))
 
 # Serve uploaded files
