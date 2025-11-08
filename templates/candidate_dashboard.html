@@ -16,7 +16,7 @@
             <h3 class="text-xl font-bold uppercase border-b border-white mb-4 pb-2">Profile Data</h3>
             <div class="space-y-2 text-sm">
                 <p><span class="opacity-70">EMAIL:</span> {{ candidate.email }}</p>
-                <p><span class="opacity-70">PHONE:</span> {{ candidate.phone }}</p>
+                <p><span class="opacity-70">PHONE:</span> {{ candidate.phone or 'Not provided' }}</p>
                 <p><span class="opacity-70">EXPERIENCE:</span> {{ candidate.experience_years }} Years</p>
                 {% if candidate.resume_link %}
                     <p class="mt-4"><a href="{{ url_for('uploaded_file', filename=candidate.resume_link) }}" class="underline hover:no-underline" target="_blank">[VIEW RESUME FILE]</a></p>
@@ -34,6 +34,29 @@
                 {% endfor %}
             </ul>
 
+            <!-- Update Profile Form -->
+            <div class="mt-8 border border-white p-4">
+                <h4 class="text-lg font-bold uppercase mb-4">UPDATE PROFILE</h4>
+                <form action="{{ url_for('candidate_update_profile') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-xs uppercase font-bold opacity-70">PHONE NUMBER</label>
+                        <input type="text" name="phone" placeholder="{{ candidate.phone or 'Enter phone' }}" class="w-full p-2 bg-black border border-white text-white">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs uppercase font-bold opacity-70">EXPERIENCE (YEARS)</label>
+                        <input type="number" name="experience" placeholder="{{ candidate.experience_years }}" class="w-full p-2 bg-black border border-white text-white">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs uppercase font-bold opacity-70">UPLOAD NEW RESUME</label>
+                        <input type="file" name="resume" accept=".pdf,.doc,.docx,.txt" class="w-full p-2 border border-white text-white">
+                        <p class="text-xs opacity-50 mt-1">Accepted formats: PDF, DOC, DOCX, TXT</p>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                        UPDATE PROFILE
+                    </button>
+                </form>
+            </div>
+
              <!-- Navigation Actions -->
             <div class="mt-8 flex flex-col space-y-3">
                 <a href="{{ url_for('jobs_list') }}" class="text-center py-3 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200">
@@ -41,6 +64,12 @@
                 </a>
                 <a href="{{ url_for('candidate_applications') }}" class="text-center py-3 border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
                     VIEW MY APPLICATIONS
+                </a>
+                <a href="{{ url_for('candidate_interviews') }}" class="text-center py-3 border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                    MY INTERVIEW SCHEDULE
+                </a>
+                <a href="{{ url_for('candidate_manage_skills') }}" class="text-center py-3 border border-white text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                    MANAGE SKILLS
                 </a>
             </div>
         </div>
@@ -54,8 +83,7 @@
                         <a href="{{ url_for('job_detail', job_id=job.job_id) }}" class="block">
                             <div class="font-bold text-lg group-hover:underline">{{ job.title }}</div>
                             <div class="text-sm opacity-70">{{ job.location }}</div>
-                             <!-- If you have company name in job object, add it here: -->
-                             <!-- <div class="text-xs uppercase mt-2">{{ job.company_name }}</div> -->
+                            <div class="text-sm mt-2">SALARY: ${{ job.salary }}</div>
                         </a>
                     </li>
                 {% else %}

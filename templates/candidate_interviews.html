@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}MY_INTERVIEWS{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">INTERVIEW SCHEDULE</h2>
+        <a href="{{ url_for('candidate_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; DASHBOARD</a>
+    </div>
+
+    {% if interviews %}
+        <div class="space-y-6">
+            {% for interview in interviews %}
+            <div class="border-2 border-white p-6 {% if interview.status == 'Selected' %}bg-white bg-opacity-5{% endif %}">
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-4 pb-4 border-b border-white">
+                    <div>
+                        <h3 class="text-2xl font-bold uppercase">{{ interview.job_title }}</h3>
+                        <p class="text-sm opacity-70 mt-1 uppercase">{{ interview.company_name }}</p>
+                        <p class="text-xs opacity-50 mt-1">{{ interview.location }}</p>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 border-2 text-sm uppercase font-bold
+                            {% if interview.status == 'Selected' %} bg-white text-black border-white
+                            {% elif interview.status == 'Shortlisted' %} border-white
+                            {% elif interview.status == 'Rejected' %} opacity-50
+                            {% else %} border-white opacity-70 {% endif %}">
+                            {{ interview.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Interview Details -->
+                <div class="grid md:grid-cols-3 gap-6 mb-4">
+                    <div class="space-y-1">
+                        <p class="text-xs uppercase opacity-50 font-bold">DATE & TIME</p>
+                        <p class="text-lg font-bold">{{ interview.interview_date }}</p>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <p class="text-xs uppercase opacity-50 font-bold">INTERVIEW MODE</p>
+                        <p class="text-lg font-bold uppercase">
+                            {% if interview.interview_mode == 'Online' %}
+                                🌐 ONLINE
+                            {% else %}
+                                📍 OFFLINE
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <p class="text-xs uppercase opacity-50 font-bold">INTERVIEWER</p>
+                        <p class="text-lg font-bold">{{ interview.interviewer_name }}</p>
+                    </div>
+                </div>
+
+                <!-- Feedback Section -->
+                {% if interview.rating %}
+                <div class="mt-4 pt-4 border-t border-white bg-white bg-opacity-5 p-4">
+                    <h4 class="text-sm font-bold uppercase mb-3 opacity-70">INTERVIEW FEEDBACK RECEIVED</h4>
+                    <div class="flex items-center gap-4 mb-3">
+                        <span class="text-xs uppercase font-bold opacity-50">RATING:</span>
+                        <div class="flex gap-1">
+                            {% for i in range(1, 11) %}
+                                <span class="w-6 h-6 border border-white flex items-center justify-center text-xs
+                                    {% if i <= interview.rating %}bg-white text-black font-bold{% else %}opacity-30{% endif %}">
+                                    {{ i }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <span class="font-bold text-lg">{{ interview.rating }}/10</span>
+                    </div>
+                    {% if interview.feedback_comments %}
+                    <div class="space-y-1">
+                        <p class="text-xs uppercase font-bold opacity-50">COMMENTS:</p>
+                        <p class="text-sm opacity-90 italic border-l-2 border-white pl-3">{{ interview.feedback_comments }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="mt-4 pt-4 border-t border-white border-dashed">
+                    <p class="text-xs uppercase opacity-50 text-center">Awaiting feedback from interviewer</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="p-12 text-center border-2 border-white border-dashed">
+            <p class="text-xl uppercase opacity-50 mb-2">NO INTERVIEWS SCHEDULED</p>
+            <p class="text-sm opacity-30">Apply to jobs to get interview opportunities</p>
+            <a href="{{ url_for('jobs_list') }}" class="inline-block mt-6 px-6 py-3 bg-white text-black font-bold uppercase hover:bg-gray-200">
+                BROWSE JOBS
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

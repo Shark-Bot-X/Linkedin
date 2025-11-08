@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block title %}COMPLETE_YOUR_PROFILE{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto border-2 border-white bg-black bg-opacity-90 p-8">
+    <div class="border-b-2 border-white pb-4 mb-8">
+        <h2 class="text-3xl font-bold uppercase tracking-widest mb-2">PROFILE INITIALIZATION</h2>
+        <p class="text-sm opacity-70">Complete your profile to access the job portal</p>
+    </div>
+
+    <form action="{{ url_for('candidate_onboarding') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        
+        <!-- Basic Information -->
+        <div class="border border-white p-6">
+            <h3 class="text-xl font-bold uppercase mb-6 border-b border-white pb-3">BASIC INFORMATION</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-sm font-bold uppercase tracking-wider">FULL NAME</label>
+                    <input type="text" value="{{ candidate.name }}" disabled class="w-full p-3 bg-black border border-white text-white opacity-50">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-bold uppercase tracking-wider">EMAIL ADDRESS</label>
+                    <input type="email" value="{{ candidate.email }}" disabled class="w-full p-3 bg-black border border-white text-white opacity-50">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-bold uppercase tracking-wider">PHONE NUMBER *</label>
+                    <input type="text" name="phone" required class="w-full p-3 bg-black border-2 border-white text-white" placeholder="Enter your phone number" value="{{ candidate.phone or '' }}">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-bold uppercase tracking-wider">YEARS OF EXPERIENCE *</label>
+                    <input type="number" name="experience" min="0" required class="w-full p-3 bg-black border-2 border-white text-white" placeholder="0" value="{{ candidate.experience_years or '' }}">
+                </div>
+            </div>
+            
+            <div class="mt-6 space-y-2">
+                <label class="text-sm font-bold uppercase tracking-wider">UPLOAD RESUME (PDF/DOCX) *</label>
+                <input type="file" name="resume" accept=".pdf,.doc,.docx" class="w-full p-3 border-2 border-white text-white" {% if not candidate.resume_link %}required{% endif %}>
+                <p class="text-xs opacity-50 mt-2">Accepted formats: PDF, DOC, DOCX (Max 10MB)</p>
+                {% if candidate.resume_link %}
+                    <p class="text-xs text-white mt-2">Current resume: {{ candidate.resume_link }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Skills Selection -->
+        <div class="border border-white p-6">
+            <h3 class="text-xl font-bold uppercase mb-4 border-b border-white pb-3">SELECT YOUR SKILLS *</h3>
+            <p class="text-sm opacity-70 mb-6">Choose all skills that apply (minimum 1 required)</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto p-2">
+                {% for skill in all_skills %}
+                <label class="cursor-pointer group">
+                    <input type="checkbox" name="skills" value="{{ skill.skill_id }}" class="hidden peer" required>
+                    <div class="p-3 border-2 border-white text-center text-sm uppercase transition-all 
+                                peer-checked:bg-white peer-checked:text-black peer-checked:font-bold
+                                hover:bg-white hover:bg-opacity-20">
+                        {{ skill.skill_name }}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            
+            <p class="text-xs opacity-50 mt-4 text-center">* At least one skill must be selected</p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-4">
+            <button type="submit" class="w-full py-4 bg-white text-black font-bold uppercase tracking-[0.3em] text-xl hover:bg-gray-200 transition-colors">
+                INITIALIZE PROFILE → ENTER PORTAL
+            </button>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('logout') }}" class="text-xs uppercase opacity-50 hover:opacity-100 underline">Logout</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Allow form submission if at least one skill is checked
+document.querySelector('form').addEventListener('submit', function(e) {
+    const checkboxes = document.querySelectorAll('input[name="skills"]:checked');
+    if (checkboxes.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one skill');
+    }
+});
+
+// Remove required attribute from individual checkboxes after first one is checked
+document.querySelectorAll('input[name="skills"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const anyChecked = document.querySelector('input[name="skills"]:checked');
+        document.querySelectorAll('input[name="skills"]').forEach(cb => {
+            cb.required = !anyChecked;
+        });
+    });
+});
+</script>
+{% endblock %}

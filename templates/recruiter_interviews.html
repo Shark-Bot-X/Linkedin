@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+
+{% block title %}INTERVIEW_MANAGEMENT{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">INTERVIEW MANIFEST</h2>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; TERMINAL</a>
+    </div>
+
+    {% if interviews %}
+        <div class="space-y-4">
+            {% for interview in interviews %}
+            <div class="border border-white p-6 relative">
+                
+                <!-- Get application status from app_id -->
+                {% set app_status = interview.app_status if interview.app_status else 'Shortlisted' %}
+                
+                <!-- Decision Badge -->
+                {% if app_status == 'Selected' %}
+                <div class="absolute top-0 right-0 bg-white text-black px-6 py-2 font-bold uppercase text-sm flex items-center gap-2">
+                    <span>✓</span> CANDIDATE SELECTED
+                </div>
+                {% elif app_status == 'Rejected' %}
+                <div class="absolute top-0 right-0 border-2 border-white px-6 py-2 font-bold uppercase text-sm opacity-70">
+                    <span>✗</span> CANDIDATE REJECTED
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 {% if app_status in ['Selected', 'Rejected'] %}mt-12{% endif %}">
+                    <!-- Interview Info -->
+                    <div class="flex-1">
+                        <div class="text-xl font-bold uppercase">{{ interview.candidate_name }}</div>
+                        <div class="text-sm opacity-70 uppercase mt-1">
+                            POSITION: {{ interview.job_title }}
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-3 text-xs font-bold uppercase">
+                            <span class="px-3 py-1 bg-white text-black">📅 {{ interview.interview_date }}</span>
+                            <span class="px-3 py-1 border border-white">
+                                {% if interview.interview_mode == 'Online' %}🌐{% else %}📍{% endif %} {{ interview.interview_mode }}
+                            </span>
+                            <span class="px-3 py-1 border border-white">👤 {{ interview.interviewer_name }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback Status -->
+                    <div class="flex flex-col items-end space-y-3">
+                        {% if interview.feedback_id %}
+                            <div class="text-right">
+                                <div class="text-xs uppercase opacity-50 mb-1">FEEDBACK SUBMITTED</div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl font-bold">{{ interview.rating }}</span>
+                                    <span class="text-sm opacity-70">/10</span>
+                                    {% if interview.rating >= 8 %}
+                                        <span class="text-xl">⭐</span>
+                                    {% endif %}
+                                </div>
+                                {% if interview.comments %}
+                                    <p class="text-xs mt-2 max-w-xs text-right italic opacity-70">"{{ interview.comments[:60] }}{% if interview.comments|length > 60 %}...{% endif %}"</p>
+                                {% endif %}
+                                
+                                <!-- Final Decision Status -->
+                                <div class="mt-3 pt-3 border-t border-white">
+                                    {% if app_status == 'Selected' %}
+                                        <span class="px-3 py-1 bg-white text-black text-xs font-bold">✓ SELECTED</span>
+                                    {% elif app_status == 'Rejected' %}
+                                        <span class="px-3 py-1 border border-white text-xs font-bold opacity-70">✗ REJECTED</span>
+                                    {% else %}
+                                        <span class="px-3 py-1 border border-white text-xs font-bold">STATUS: {{ app_status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <a href="{{ url_for('give_feedback_form', interview_id=interview.interview_id) }}" 
+                               class="px-4 py-2 border border-white text-xs font-bold uppercase hover:bg-white hover:text-black transition-colors">
+                                UPDATE FEEDBACK
+                            </a>
+                        {% else %}
+                            <span class="px-3 py-1 border border-white text-xs uppercase opacity-50">FEEDBACK PENDING</span>
+                            <a href="{{ url_for('give_feedback_form', interview_id=interview.interview_id) }}" 
+                               class="px-4 py-2 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200">
+                                SUBMIT FEEDBACK
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="p-12 text-center border-2 border-white border-dashed">
+            <p class="text-xl uppercase opacity-50 mb-2">NO INTERVIEWS SCHEDULED</p>
+            <p class="text-sm opacity-30">Schedule interviews from your job applications</p>
+            <a href="{{ url_for('recruiter_dashboard') }}" class="inline-block mt-6 px-6 py-3 bg-white text-black font-bold uppercase hover:bg-gray-200">
+                VIEW JOB POSTINGS
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}MANAGE_SKILLS{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">SKILL PORTFOLIO</h2>
+        <a href="{{ url_for('candidate_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; DASHBOARD</a>
+    </div>
+
+    <p class="text-sm opacity-70 mb-8">Select all skills you possess. This helps us recommend relevant jobs to you.</p>
+
+    <form action="{{ url_for('candidate_manage_skills') }}" method="POST" class="space-y-6">
+        
+        <div class="border border-white p-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto p-2">
+                {% for skill in all_skills %}
+                <label class="cursor-pointer group">
+                    <input type="checkbox" name="skills" value="{{ skill.skill_id }}" 
+                           {% if skill.skill_id in current_skill_ids %}checked{% endif %}
+                           class="hidden peer">
+                    <div class="p-3 border-2 border-white text-center text-sm uppercase transition-all 
+                                peer-checked:bg-white peer-checked:text-black peer-checked:font-bold
+                                hover:bg-white hover:bg-opacity-20">
+                        {{ skill.skill_name }}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <button type="submit" class="flex-1 py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                UPDATE SKILLS
+            </button>
+            <a href="{{ url_for('candidate_dashboard') }}" class="px-8 py-4 border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors flex items-center justify-center">
+                CANCEL
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

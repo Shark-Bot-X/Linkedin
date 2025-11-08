@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+
+{% block title %}Login / Signup - Job Portal{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto border-2 border-white bg-black bg-opacity-80 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.3)] p-6">
+    <h2 class="text-3xl font-bold text-center mb-8 uppercase tracking-widest border-b-2 border-white pb-4">
+        PORTAL_ACCESS
+    </h2>
+
+    <!-- Role Toggles -->
+    <div class="flex mb-8 border-2 border-white">
+        <button onclick="setRole('candidate')" id="btn-role-candidate" class="flex-1 py-3 text-sm font-bold uppercase tracking-wider active-tab transition-colors duration-200">
+            Candidate
+        </button>
+        <button onclick="setRole('recruiter')" id="btn-role-recruiter" class="flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+            Recruiter
+        </button>
+    </div>
+
+    <!-- CANDIDATE SECTION -->
+    <div id="candidateSection">
+        <div class="flex justify-center mb-6 text-sm">
+            <button onclick="setFormType('candidate', 'login')" id="btn-candidate-login" class="mx-2 px-2 py-1 border-b-2 border-white font-bold">LOGIN</button>
+            <span class="py-1">/</span>
+            <button onclick="setFormType('candidate', 'signup')" id="btn-candidate-signup" class="mx-2 px-2 py-1 opacity-50">SIGN UP</button>
+        </div>
+
+        <!-- Candidate Login -->
+        <div id="candidateLoginFormWrapper">
+            <form action="/login_candidate" method="POST" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Email</label>
+                    <input type="email" name="email" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Password</label>
+                    <input type="password" name="password" required class="w-full p-3">
+                </div>
+                <button type="submit" class="w-full py-3 mt-6 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                    Initialize Session
+                </button>
+            </form>
+        </div>
+
+        <!-- Candidate Signup (SIMPLIFIED - Details added in onboarding) -->
+        <div id="candidateSignupFormWrapper" style="display: none;">
+            <form action="/signup_candidate" method="POST" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Full Name</label>
+                    <input type="text" name="name" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Email</label>
+                    <input type="email" name="email" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Password</label>
+                    <input type="password" name="password" required class="w-full p-3">
+                </div>
+                <button type="submit" class="w-full py-3 mt-6 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                    Create Account
+                </button>
+                <p class="text-xs text-center opacity-50 mt-2">You'll complete your profile after signup</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- RECRUITER SECTION -->
+    <div id="recruiterSection" style="display: none;">
+        <div class="flex justify-center mb-6 text-sm">
+            <button onclick="setFormType('recruiter', 'login')" id="btn-recruiter-login" class="mx-2 px-2 py-1 border-b-2 border-white font-bold">LOGIN</button>
+            <span class="py-1">/</span>
+            <button onclick="setFormType('recruiter', 'signup')" id="btn-recruiter-signup" class="mx-2 px-2 py-1 opacity-50">SIGN UP</button>
+        </div>
+
+        <div id="recruiterLoginFormWrapper">
+            <form action="/login_recruiter" method="POST" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Email</label>
+                    <input type="email" name="email" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Password</label>
+                    <input type="password" name="password" required class="w-full p-3">
+                </div>
+                <button type="submit" class="w-full py-3 mt-6 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                    Access Terminal
+                </button>
+            </form>
+        </div>
+
+        <div id="recruiterSignupFormWrapper" style="display: none;">
+            <form action="/signup_recruiter" method="POST" class="space-y-4">
+                    <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Company Name</label>
+                    <input type="text" name="company_name" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Recruiter Name</label>
+                    <input type="text" name="recruiter_name" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Email</label>
+                    <input type="email" name="email" required class="w-full p-3">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs uppercase tracking-wider font-bold">Password</label>
+                    <input type="password" name="password" required class="w-full p-3">
+                </div>
+                <button type="submit" class="w-full py-3 mt-6 bg-white text-black font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                    Register Company
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <h2 class="text-2xl font-bold uppercase tracking-widest">CREATE JOB LISTING</h2>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; CANCEL</a>
+    </div>
+
+    <form action="{{ url_for('recruiter_post_job') }}" method="POST" class="space-y-6">
+        <!-- Job Title -->
+        <div class="space-y-2">
+            <label class="text-sm font-bold uppercase tracking-wider">JOB TITLE</label>
+            <input type="text" name="title" required class="w-full p-3 bg-black border-2 border-white text-white placeholder-gray-500" placeholder="e.g., Senior Software Engineer">
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-2">
+            <label class="text-sm font-bold uppercase tracking-wider">JOB DESCRIPTION</label>
+            <textarea name="description" rows="6" required class="w-full p-3 bg-black border-2 border-white text-white placeholder-gray-500" placeholder="Detailed job description..."></textarea>
+        </div>
+
+        <!-- Location and Salary -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <label class="text-sm font-bold uppercase tracking-wider">LOCATION</label>
+                <input type="text" name="location" required class="w-full p-3 bg-black border-2 border-white text-white placeholder-gray-500" placeholder="e.g., Bangalore">
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-bold uppercase tracking-wider">SALARY ($)</label>
+                <input type="number" name="salary" step="0.01" required class="w-full p-3 bg-black border-2 border-white text-white placeholder-gray-500" placeholder="80000">
+            </div>
+        </div>
+
+        <!-- Required Skills -->
+        <div class="space-y-2">
+            <label class="text-sm font-bold uppercase tracking-wider">REQUIRED SKILLS</label>
+            <div class="border-2 border-white p-4 max-h-64 overflow-y-auto">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {% for skill in skills %}
+                    <label class="flex items-center cursor-pointer group">
+                        <input type="checkbox" name="skills" value="{{ skill.skill_id }}" class="hidden peer">
+                        <span class="flex-1 p-2 border border-white text-xs uppercase text-center transition-all peer-checked:bg-white peer-checked:text-black hover:bg-white hover:bg-opacity-20">
+                            {{ skill.skill_name }}
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <p class="text-xs opacity-50 mt-2">Select all skills required for this position</p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-4">
+            <button type="submit" class="w-full py-4 bg-white text-black font-bold uppercase tracking-[0.2em] text-lg hover:bg-gray-200 transition-colors">
+                PUBLISH JOB LISTING
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

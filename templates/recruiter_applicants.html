@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block title %}JOB_APPLICANTS - {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="border-2 border-white bg-black bg-opacity-90 p-6">
+    <div class="flex justify-between items-center border-b-2 border-white pb-4 mb-6">
+        <div>
+            <h2 class="text-2xl font-bold uppercase tracking-widest">APPLICANT RECORDS</h2>
+            <p class="text-sm opacity-70 mt-1">{{ job.title }}</p>
+        </div>
+        <a href="{{ url_for('recruiter_dashboard') }}" class="text-xs uppercase underline hover:no-underline">&larr; DASHBOARD</a>
+    </div>
+
+    <div class="space-y-6">
+        {% for app in applications %}
+        <div class="border border-white p-6">
+            <!-- Candidate Info -->
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-xl font-bold uppercase">{{ app.name }}</h3>
+                    <p class="text-sm opacity-70 mt-1">📧 {{ app.email }}</p>
+                    <p class="text-sm opacity-70">📱 {{ app.phone or 'No phone provided' }}</p>
+                    <p class="text-xs uppercase mt-2 opacity-50">APPLIED: {{ app.applied_date }} | EXPERIENCE: {{ app.experience_years }} years</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-3 py-1 border text-xs uppercase font-bold
+                        {% if app.status == 'Selected' %} bg-white text-black
+                        {% elif app.status == 'Rejected' %} opacity-50
+                        {% elif app.status == 'Shortlisted' %} border-white
+                        {% else %} border-white opacity-70 {% endif %}">
+                        {{ app.status }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="mb-4">
+                <h4 class="text-sm font-bold uppercase opacity-70 mb-2">CANDIDATE SKILLS:</h4>
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in app.skills %}
+                        <span class="px-2 py-1 border border-white text-xs">{{ skill.skill_name }}</span>
+                    {% else %}
+                        <span class="text-xs opacity-50">No skills listed</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Resume Link -->
+            {% if app.resume_link %}
+            <div class="mb-4">
+                <a href="{{ url_for('uploaded_file', filename=app.resume_link) }}" target="_blank" class="text-xs uppercase underline hover:no-underline">
+                    [VIEW RESUME]
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Interview Status -->
+            {% if app.interview %}
+            <div class="mb-4 p-3 border border-white bg-white bg-opacity-5">
+                <h4 class="text-xs font-bold uppercase opacity-70 mb-2">INTERVIEW SCHEDULED:</h4>
+                <div class="flex flex-wrap gap-3 text-xs">
+                    <span>📅 {{ app.interview[0].interview_date }}</span>
+                    <span>{% if app.interview[0].interview_mode == 'Online' %}🌐{% else %}📍{% endif %} {{ app.interview[0].interview_mode }}</span>
+                    <span>👤 {{ app.interview[0].interviewer_name }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-4 border-t border-white">
+                <!-- Update Status -->
+                <form action="{{ url_for('recruiter_update_status', app_id=app.app_id) }}" method="POST" class="flex gap-2">
+                    <select name="status" class="flex-1 p-2 bg-black border border-white text-white text-xs" required>
+                        <option value="">CHANGE STATUS</option>
+                        <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>APPLIED</option>
+                        <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>SHORTLISTED</option>
+                        <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>REJECTED</option>
+                        <option value="Selected" {% if app.status == 'Selected' %}selected{% endif %}>SELECTED</option>
+                    </select>
+                    <button type="submit" class="px-4 py-2 bg-white text-black text-xs uppercase font-bold hover:bg-gray-200">
+                        UPDATE
+                    </button>
+                </form>
+
+                <!-- Schedule Interview -->
+                {% if not app.interview %}
+                <form action="{{ url_for('recruiter_schedule_interview', app_id=app.app_id) }}" method="POST" class="grid grid-cols-3 gap-2">
+                    <input type="date" name="interview_date" required class="p-2 bg-black border border-white text-white text-xs">
+                    <select name="mode" class="p-2 bg-black border border-white text-white text-xs" required>
+                        <option value="Online">ONLINE</option>
+                        <option value="Offline">OFFLINE</option>
+                    </select>
+                    <input type="text" name="interviewer" placeholder="Interviewer Name" required class="p-2 bg-black border border-white text-white text-xs">
+                    <button type="submit" class="col-span-3 py-2 border border-white text-xs uppercase font-bold hover:bg-white hover:text-black">
+                        SCHEDULE INTERVIEW
+                    </button>
+                </form>
+                {% else %}
+                <div class="flex items-center justify-center text-xs uppercase opacity-50">
+                    Interview Already Scheduled
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="p-12 text-center border-2 border-white border-dashed opacity-50 uppercase">
+            NO APPLICATIONS RECEIVED FOR THIS POSITION.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
