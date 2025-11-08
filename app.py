@@ -272,8 +272,8 @@ def get_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="your_password_here",  # change this
-            database="job_recruitment_portal11"
+            password="#Ks_31102006",  # change this
+            database="job_recruitment_portal"
         )
         return connection
     except Error as e:
