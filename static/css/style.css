@@ -5,24 +5,36 @@
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: #fff; border-radius: 4px; }
 
-/* Base styles to enforce strict black/white */
+/* Variables for new color */
+:root {
+    --accent-color: #b19eef; /* New color: Light Purple */
+    --accent-dark: #8c72e6; /* A slightly darker shade for interaction states */
+    --text-color: #ffffff;
+    --background-color: #000000;
+}
+
+/* Base styles */
 body {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-family: 'Courier New', Courier, monospace;
 }
 
+/* Updated input styling for accent border/focus */
 input, textarea, select {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border: 1px solid #ffffff !important;
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--accent-color) !important; 
     outline: none;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 input::placeholder, textarea::placeholder {
     color: #888888;
 }
 input:focus, textarea:focus, select:focus {
-     box-shadow: 0 0 0 2px #ffffff;
+    /* Use accent color for focus ring */
+    box-shadow: 0 0 0 2px var(--accent-color); 
+    border-color: var(--accent-color) !important;
 }
 
 /* Canvas behind everything */
@@ -35,9 +47,69 @@ input:focus, textarea:focus, select:focus {
     z-index: -1;
 }
 
+/* --- Loading Content Overlay --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95); 
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    opacity: 1;
+    transition: opacity 1s ease-out, visibility 1s ease-out;
+}
+
+#loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid var(--accent-color); /* Spinner color */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* --- Glassy Effect for Tables and Main Containers --- */
+/* Apply this to <table>, .data-table, or a major section container like .glass-panel */
+table, .data-table, .glass-panel { 
+    background: rgba(177, 158, 239, 0.08); /* Transparent background of the new color */
+    backdrop-filter: blur(5px); 
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 10px;
+    /* Use the accent color for a subtle, visible border */
+    border: 1px solid rgba(177, 158, 239, 0.3); 
+    padding: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    color: var(--text-color); 
+}
+table th, table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Active Tab/Button: Change from white/black to purple/black */
 .active-tab {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--accent-color);
+    color: var(--background-color) !important; /* Text should be black on purple */
+    border-color: var(--accent-color) !important;
 }
 
 /* Flash Messages */
@@ -53,9 +125,9 @@ input:focus, textarea:focus, select:focus {
 .flashes li {
     padding: 10px 15px;
     margin-bottom: 10px;
-    border: 1px solid #fff;
+    border: 1px solid var(--accent-color); /* Flash border changed to new color */
     background: rgba(0,0,0,0.8);
     text-align: center;
 }
-.flashes li.error { border-color: #ff3333; color: #ff3333; } /* Optional: stark red for critical errors if desired, otherwise keep white */
-.flashes li.success { border-color: #ffffff; }
+.flashes li.error { border-color: #ff3333; color: #ff3333; }
+.flashes li.success { border-color: var(--accent-color); color: var(--accent-color); }

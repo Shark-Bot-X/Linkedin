@@ -4,17 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Job Portal{% endblock %}</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'accent-b19eef': '#b19eef',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="h-full flex flex-col items-center overflow-x-hidden">
-    <!-- Background Animation -->
+    
+    <div id="loading-overlay">
+        <div class="loader-spinner"></div>
+        <p>LOADING CONTENT...</p>
+    </div>
+
     <canvas id="cometCanvas"></canvas>
 
-    <!-- Main Content Container -->
     <main class="relative z-10 w-full max-w-4xl p-4 md:p-6 mt-10 mb-10">
         
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="flashes">
@@ -25,7 +39,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Page Specific Content -->
         {% block content %}{% endblock %}
     </main>
 

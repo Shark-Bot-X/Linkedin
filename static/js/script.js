@@ -1,12 +1,25 @@
 // static/js/script.js
 
-// --- COMET ANIMATION LOGIC ---
-// (Only runs if canvas exists on the page)
+// --- UI Logic: Hide Loading Overlay ---
+window.addEventListener('load', () => {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        // Hide overlay after content loads
+        setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+        }, 500); 
+    }
+});
+
+
+// --- SQUARED BACKGROUND ANIMATION LOGIC ---
 const canvas = document.getElementById('cometCanvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
     let w, h;
-    let comets = [];
+    let particles = [];
+    // Define accent color here for use in canvas
+    const ACCENT_COLOR = '#b19eef'; 
 
     function resize() {
         w = canvas.width = window.innerWidth;
@@ -15,14 +28,14 @@ if (canvas) {
     window.addEventListener('resize', resize);
     resize();
 
-    class Comet {
+    class SquareParticle {
         constructor() {
+            this.size = Math.random() * 2 + 1; // Small square size
             this.x = Math.random() * w;
             this.y = Math.random() * h;
-            this.length = Math.random() * 80 + 10;
-            this.speed = Math.random() * 2 + 1.5;
-            this.opacity = Math.random() * 0.5 + 0.1;
-            this.angle = Math.PI / 4 + (Math.random() * 0.1 - 0.05); 
+            this.speed = Math.random() * 0.5 + 0.1; // Slower, subtle movement
+            this.opacity = Math.random() * 0.4 + 0.1;
+            this.angle = Math.PI * 0.25; // Gentle diagonal drift
             this.dx = Math.cos(this.angle) * this.speed;
             this.dy = Math.sin(this.angle) * this.speed;
         }
@@ -30,56 +43,53 @@ if (canvas) {
         update() {
             this.x += this.dx;
             this.y += this.dy;
-            if (this.x > w + 100 || this.y > h + 100) {
-                this.x = Math.random() * w * 1.5 - w;
-                this.y = -100;
-                this.opacity = Math.random() * 0.5 + 0.5;
+            
+            // Loop particles back from the top-left when they exit bottom-right
+            if (this.x > w + this.size * 2) {
+                this.x = -this.size * 2;
+            }
+            if (this.y > h + this.size * 2) {
+                this.y = -this.size * 2;
             }
         }
 
         draw() {
-            ctx.beginPath();
-            const headX = this.x;
-            const headY = this.y;
-            const tailX = this.x - Math.cos(this.angle) * this.length;
-            const tailY = this.y - Math.sin(this.angle) * this.length;
-            const gradient = ctx.createLinearGradient(headX, headY, tailX, tailY);
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 2;
-            ctx.moveTo(headX, headY);
-            ctx.lineTo(tailX, tailY);
-            ctx.stroke();
+            // Draw the small box using the accent color
+            ctx.fillStyle = `rgba(177, 158, 239, ${this.opacity})`; 
+            ctx.fillRect(this.x, this.y, this.size, this.size);
         }
     }
 
-    function initComets() {
-        comets = [];
-        for (let i = 0; i < 15; i++) {
-            comets.push(new Comet());
+    function initParticles() {
+        particles = [];
+        // Denser field of particles/boxes
+        for (let i = 0; i < 200; i++) {
+            particles.push(new SquareParticle());
         }
     }
 
     function animate() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        // Use a very dark, slightly transparent overlay to create subtle trails/fading
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; 
         ctx.fillRect(0, 0, w, h);
-        comets.forEach(comet => {
-            comet.update();
-            comet.draw();
+        
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
         });
         requestAnimationFrame(animate);
     }
 
-    initComets();
+    initParticles();
     animate();
 }
+// --- END SQUARED BACKGROUND ANIMATION LOGIC ---
+
 
 // --- FORM TOGGLE LOGIC (Index page specific) ---
 function setRole(role) {
     const candidateSection = document.getElementById('candidateSection');
     const recruiterSection = document.getElementById('recruiterSection');
-    // Guards in case these elements don't exist on other pages
     if (!candidateSection || !recruiterSection) return; 
 
     const btnCandidate = document.getElementById('btn-role-candidate');
@@ -106,19 +116,26 @@ function setFormType(role, type) {
     const btnLogin = document.getElementById(`btn-${role}-login`);
     const btnSignup = document.getElementById(`btn-${role}-signup`);
 
+    // Use the accent color class defined in Tailwind config in layout.html
+    const activeBorderClass = 'border-accent-purple'; 
+
     if (type === 'login') {
         loginWrapper.style.display = 'block';
         signupWrapper.style.display = 'none';
-        btnLogin.classList.add('border-b-2', 'border-white', 'font-bold');
-        btnLogin.classList.remove('opacity-50');
-        btnSignup.classList.remove('border-b-2', 'border-white', 'font-bold');
+        // Active border should be purple
+        btnLogin.classList.add('border-b-2', activeBorderClass, 'font-bold');
+        btnLogin.classList.remove('opacity-50', 'border-white');
+        
+        btnSignup.classList.remove('border-b-2', activeBorderClass, 'font-bold');
         btnSignup.classList.add('opacity-50');
     } else {
         loginWrapper.style.display = 'none';
         signupWrapper.style.display = 'block';
-        btnSignup.classList.add('border-b-2', 'border-white', 'font-bold');
-        btnSignup.classList.remove('opacity-50');
-        btnLogin.classList.remove('border-b-2', 'border-white', 'font-bold');
+        // Active border should be purple
+        btnSignup.classList.add('border-b-2', activeBorderClass, 'font-bold');
+        btnSignup.classList.remove('opacity-50', 'border-white');
+        
+        btnLogin.classList.remove('border-b-2', activeBorderClass, 'font-bold');
         btnLogin.classList.add('opacity-50');
     }
 }
